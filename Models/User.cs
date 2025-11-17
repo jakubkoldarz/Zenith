@@ -15,8 +15,8 @@ namespace Zenith.Models
         public string? Lastname { get; set; }
 
         [Required]
-        [MaxLength(200)]
-        public string? Password { get; set; }
+        [MaxLength(100)]
+        public string? PasswordHash { get; set; }
 
         [Required]
         [EmailAddress]
