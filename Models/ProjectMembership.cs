@@ -5,10 +5,10 @@ namespace Zenith.Models
 {
     public class ProjectMembership
     {
-        [Required]
+        public int UserId { get; set; }
         public virtual User? User { get; set; }
 
-        [Required]
+        public int ProjectId { get; set; }
         public virtual Project? Project { get; set; }
 
         [Required]

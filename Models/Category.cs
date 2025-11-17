@@ -13,7 +13,7 @@ namespace Zenith.Models
         public string? Name { get; set; }
         public int Order { get; set; }
 
-        [Required]
+        public int ProjectId { get; set; }
         public virtual Project? Project { get; set; }
 
         public virtual ICollection<TaskItem> TaskItems { get; set; } = new List<TaskItem>();
