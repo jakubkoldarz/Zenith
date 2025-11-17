@@ -1,0 +1,6 @@
+@Zenith_HostAddress = http://localhost:5076
+
+GET {{Zenith_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
