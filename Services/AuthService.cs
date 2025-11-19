@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Text;
 using Zenith.Data;
 using Zenith.Dtos.Auth;
+using Zenith.Exceptions;
 using Zenith.Models;
 
 namespace Zenith.Services
@@ -14,25 +15,32 @@ namespace Zenith.Services
         private readonly DataContext _context = context;
         private readonly IConfiguration _configuration = configuration;
 
-        public async Task<LoginResponseDto> Login(LoginDto loginDto)
+        public async Task<LoginResponseDto> LoginAsync(LoginDto loginDto)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == loginDto.Email);
 
-            if (user == null || !BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash))
+            if (user == null)
             {
-                throw new Exception("User does not exist");
+                throw new BadRequestException("User does not exist");
+            }
+
+            var isHashValid = BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash);
+
+            if (!isHashValid)
+            {
+                throw new BadRequestException("Invalid credentials");
             }
 
             string token = GenerateJwtToken(user);
             return new LoginResponseDto { Token = token };
         }
 
-        public async Task Register(RegisterDto registerDto)
+        public async Task RegisterAsync(RegisterDto registerDto)
         {
-            var existingUser = await _context.Users.AnyAsync(u => u.Email == registerDto.Email);
-            if(existingUser)
+            var userExists = await _context.Users.AnyAsync(u => u.Email == registerDto.Email);
+            if(userExists)
             {
-                throw new Exception("Email is already taken");
+                throw new BadRequestException("Email is already taken");
             }
 
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(registerDto.Password!);
@@ -53,7 +61,7 @@ namespace Zenith.Services
         {
             if(user.Firstname == null || user.Email == null)
             {
-                throw new Exception("User data is incomplete");
+                throw new BadRequestException("User data is incomplete");
             }
 
             var jwtKey = _configuration["Jwt:Key"]!;
@@ -69,7 +77,7 @@ namespace Zenith.Services
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddHours(8),
+                Expires = DateTime.UtcNow.AddHours(1),
                 SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature)
             };
 

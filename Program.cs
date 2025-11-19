@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Scalar.AspNetCore;
 using System.Text;
 using Zenith.Data;
+using Zenith.Middleware;
 using Zenith.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,13 +15,9 @@ builder.Services.AddDbContext<DataContext>(options =>
 );
 
 builder.Services.AddControllers();
-builder.Services.AddRouting(options =>
-{
-    options.LowercaseUrls = true;
-});
+builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddOpenApi();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -33,30 +31,36 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = false,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-
         IssuerSigningKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)
         )
     };
 });
 
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<UserService>();
 
 var app = builder.Build();
+app.UseMiddleware<ExceptionMiddleware>();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.MapOpenApi(); 
+    app.MapScalarApiReference(options =>
+    {
+        options.WithTitle("Zenith API - Documentation")
+        .WithTheme(ScalarTheme.DeepSpace)
+        .ForceDarkMode()
+        .SortTagsAlphabetically()
+        .AddPreferredSecuritySchemes("BearerAuth");
+    }); 
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
