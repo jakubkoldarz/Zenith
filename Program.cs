@@ -93,8 +93,10 @@ if (app.Environment.IsDevelopment())
         options.WithTitle("Zenith API - Documentation")
         .WithTheme(ScalarTheme.DeepSpace)
         .ForceDarkMode()
+        .HideDarkModeToggle()
         .SortTagsAlphabetically()
-        .AddPreferredSecuritySchemes("BearerAuth");
+        .AddPreferredSecuritySchemes("Bearer")
+        .AddHttpAuthentication("Bearer", bearer => { bearer.Token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIyIiwidW5pcXVlX25hbWUiOiJKb2UiLCJlbWFpbCI6ImpvZS5kb2VAZXhhbXBsZS5jb20iLCJuYmYiOjE3NjQwMTk1NTYsImV4cCI6MTEyMzEwNDAzNTYsImlhdCI6MTc2NDAxOTU1Nn0.guqcL8-tnGAqzsWP8-JxOcwf6iLkeHf_xiHT_QPXoDw"; });
     }); 
 }
 
