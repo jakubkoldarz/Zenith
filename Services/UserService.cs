@@ -26,7 +26,7 @@ namespace Zenith.Services
                 Email = user.Email
             };
         }
-        public async Task<List<UserDto>> GetUsersAsync(string? searchParam = null)
+        public async Task<IEnumerable<UserDto>> GetUsersAsync(string? searchParam = null)
         {
             var query = context.Users.AsNoTracking().AsQueryable();
 
@@ -36,7 +36,7 @@ namespace Zenith.Services
                 query = query.Where(u =>
                     u.Firstname.ToLower().Contains(searchParam) ||
                     u.Email.ToLower().Contains(searchParam)
-                );
+                ).Take(20);
             }
 
             var users = await query.Select(u => new UserDto

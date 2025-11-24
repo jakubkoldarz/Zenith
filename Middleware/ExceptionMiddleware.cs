@@ -33,7 +33,7 @@ namespace Zenith.Middleware
         {
             context.Response.ContentType = "application/json";
 
-            int status;
+            HttpStatusCode status;
             string message;
 
             if(exception is AppException appException)
@@ -43,11 +43,12 @@ namespace Zenith.Middleware
             }
             else
             {
-                status = 500;
+                status = HttpStatusCode.InternalServerError;
                 message = "Internal server error";
             }
 
-            return context.Response.WriteAsync(JsonSerializer.Serialize(new {status, message}));
+            context.Response.StatusCode = (int)status;
+            return context.Response.WriteAsync(JsonSerializer.Serialize(new {message}));
         }
     }
 }

@@ -1,9 +1,8 @@
-﻿namespace Zenith.Exceptions
+﻿using System.Net;
+
+namespace Zenith.Exceptions
 {
-    public class NotFoundException : AppException
+    public class NotFoundException(string message) : AppException(message, HttpStatusCode.NotFound)
     {
-        public NotFoundException(string message) : base(message, 404)
-        {
-        }
     }
 }

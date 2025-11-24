@@ -1,10 +1,8 @@
-﻿namespace Zenith.Exceptions
-{
-    public class BadRequestException : AppException
-    {
-        public BadRequestException(string message) : base(message, 404)
-        {
+﻿using System.Net;
 
-        }
+namespace Zenith.Exceptions
+{
+    public class BadRequestException(string message) : AppException(message, HttpStatusCode.BadRequest)
+    {
     }
 }

@@ -8,14 +8,14 @@ using Zenith.Services;
 
 namespace Zenith.Controllers
 {
-    [Route("/api/user")]
+    [Route("/api/users")]
     [ApiController]
     [Authorize]
-    public class UserController(UserService userService) : Controller
+    public class UserController(UserService userService) : ControllerBase
     {
         private readonly UserService _userService = userService;
 
-        [HttpGet("/me")]
+        [HttpGet("me")]
         public async Task<IActionResult> GetMyProfileAsync()
         {
             var userId = User.GetUserId();
@@ -25,7 +25,7 @@ namespace Zenith.Controllers
             return Ok(userDto);
         }
 
-        [HttpGet("/")]
+        [HttpGet]
         public async Task<IActionResult> GetAllUsersAsync([FromQuery] string? search)
         {
             var users = await _userService.GetUsersAsync(search);

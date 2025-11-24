@@ -8,7 +8,7 @@ namespace Zenith.Dtos.Auth
         [DefaultValue("joe.doe@example.com")]
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress(ErrorMessage = "Invalid email address")]
-        public string? Email { get; set; }
+        public string? Email { get; set; } 
 
         [DefaultValue("P@ssw0rd!")]
         [Required(ErrorMessage = "Password is required")]

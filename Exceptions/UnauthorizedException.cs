@@ -1,9 +1,8 @@
-﻿namespace Zenith.Exceptions
+﻿using System.Net;
+
+namespace Zenith.Exceptions
 {
-    public class UnauthorizedException : AppException
+    public class UnauthorizedException(string message) : AppException(message, HttpStatusCode.Unauthorized)
     {
-        public UnauthorizedException(string message) : base(message, 401)
-        {
-        }
     }
 }

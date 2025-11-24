@@ -1,7 +1,9 @@
-﻿namespace Zenith.Exceptions
+﻿using System.Net;
+
+namespace Zenith.Exceptions
 {
-    public class AppException(string message, int statusCode = 500) : Exception(message)
+    public class AppException(string message, HttpStatusCode statusCode = HttpStatusCode.InternalServerError) : Exception(message)
     {
-        public int StatusCode { get; } = statusCode;
+        public HttpStatusCode StatusCode { get; } = statusCode;
     }
 }
