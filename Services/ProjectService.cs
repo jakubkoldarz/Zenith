@@ -123,9 +123,20 @@ namespace Zenith.Services
                 projectId, revokeAccessDto.UserId
             );
         }
-        public async Task DeleteProjectAsync(int projectId)
+        public async Task DeleteProjectAsync(int projectId, int userId)
         {
+            var membership = await context.ProjectMemberships
+                .FirstOrDefaultAsync(pm => pm.ProjectId == projectId && pm.UserId == userId);
 
+            if(membership == null || membership.Role != ProjectRole.Owner)
+            {
+                throw new UnauthorizedException("User does not have permission to delete this project.");
+            }
+
+            var projectToDelete = new Project { Id = projectId };
+            context.Projects.Remove(projectToDelete);
+
+            await context.SaveChangesAsync();
         }
     }
 }

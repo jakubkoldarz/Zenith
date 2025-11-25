@@ -13,7 +13,7 @@ namespace Zenith.Controllers
     public class ProjectController(ProjectService projectService) : ControllerBase
     {
         [HttpGet]
-        public async Task<IActionResult> GetAllProjectsAsync()
+        public async Task<IActionResult> GetAllProjects()
         {
             var userId = User.GetUserId();
             var projects = await projectService.GetUserProjectsAsync(userId);
@@ -21,7 +21,7 @@ namespace Zenith.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateProjectAsync([FromBody] CreateProjectDto createProjectDto)
+        public async Task<IActionResult> CreateProject([FromBody] CreateProjectDto createProjectDto)
         {
             var userId = User.GetUserId();
             var project = await projectService.CreateProjectAsync(userId, createProjectDto);
@@ -29,7 +29,7 @@ namespace Zenith.Controllers
         }
 
         [HttpPatch("{projectId}")]
-        public async Task<IActionResult> UpdateProjectAsync([FromRoute] int projectId, [FromBody] UpdateProjectDto updateProjectDto)
+        public async Task<IActionResult> UpdateProject([FromRoute] int projectId, [FromBody] UpdateProjectDto updateProjectDto)
         {
             var userId = User.GetUserId();
             var project = await projectService.UpdateProjectAsync(projectId, userId, updateProjectDto);
@@ -49,6 +49,14 @@ namespace Zenith.Controllers
         {
             var userId = User.GetUserId();
             await projectService.RevokeAccessAsync(projectId, userId, revokeAccessDto);
+            return Ok();
+        }
+
+        [HttpDelete("{projectId}")]
+        public async Task<IActionResult> DeleteProject([FromRoute] int projectId)
+        {
+            var userId = User.GetUserId();
+            await projectService.DeleteProjectAsync(projectId, userId);
             return Ok();
         }
     }
