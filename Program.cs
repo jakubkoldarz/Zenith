@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Scalar.AspNetCore;
 using System.Text;
+using System.Text.Json.Serialization;
 using Zenith.Data;
+using Zenith.Dtos;
 using Zenith.Middleware;
 using Zenith.Services;
 
@@ -15,7 +18,33 @@ builder.Services.AddDbContext<DataContext>(options =>
     options.UseNpgsql(connectionString)
 );
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(
+        new JsonStringEnumConverter(allowIntegerValues: false)
+    );
+}).ConfigureApiBehaviorOptions(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var errors = context.ModelState
+            .Where(e => e.Value?.Errors.Count > 0)
+            .ToDictionary(
+                kvp => kvp.Key,
+                kvp => kvp.Value?.Errors.Select(e => e.ErrorMessage).ToArray()
+            );
+
+        var errorResponse = new ErrorResponse
+        {
+            Status = 400,
+            Errors = errors!
+        };
+
+        return new BadRequestObjectResult(errorResponse);
+    };
+});
+
+
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
 builder.Services.AddOpenApi("v1", options =>
@@ -78,6 +107,8 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthorization();
+
+builder.Services.AddSingleton<JwtTokenService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<ProjectService>();

@@ -1,5 +1,8 @@
-﻿namespace Zenith.Models.Enums
+﻿using System.Text.Json.Serialization;
+
+namespace Zenith.Models.Enums
 {
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum ProjectRole
     {
         Viewer, // Can only view project

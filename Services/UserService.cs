@@ -7,11 +7,9 @@ namespace Zenith.Services
 {
     public class UserService(DataContext context)
     {
-        private readonly DataContext _context = context;
-
         public async Task<UserDto> GetSingleUserAsync(int userId)
         {
-            var user = await _context.Users.FindAsync(userId);
+            var user = await context.Users.FindAsync(userId);
 
             if (user == null)
             {
@@ -34,8 +32,8 @@ namespace Zenith.Services
             {
                 searchParam = searchParam.ToLower();
                 query = query.Where(u =>
-                    u.Firstname.ToLower().Contains(searchParam) ||
-                    u.Email.ToLower().Contains(searchParam)
+                    u.Firstname!.ToLower().Contains(searchParam) ||
+                    u.Email!.ToLower().Contains(searchParam)
                 ).Take(20);
             }
 

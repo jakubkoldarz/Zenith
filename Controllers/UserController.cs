@@ -13,14 +13,12 @@ namespace Zenith.Controllers
     [Authorize]
     public class UserController(UserService userService) : ControllerBase
     {
-        private readonly UserService _userService = userService;
-
         [HttpGet("me")]
         public async Task<IActionResult> GetMyProfileAsync()
         {
             var userId = User.GetUserId();
 
-            var userDto = await _userService.GetSingleUserAsync(userId);
+            var userDto = await userService.GetSingleUserAsync(userId);
 
             return Ok(userDto);
         }
@@ -28,7 +26,7 @@ namespace Zenith.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllUsersAsync([FromQuery] string? search)
         {
-            var users = await _userService.GetUsersAsync(search);
+            var users = await userService.GetUsersAsync(search);
             return Ok(users);
         }
     }

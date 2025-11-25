@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Text.Json;
+using Zenith.Dtos;
 using Zenith.Exceptions;
 
 namespace Zenith.Middleware
@@ -48,7 +49,15 @@ namespace Zenith.Middleware
             }
 
             context.Response.StatusCode = (int)status;
-            return context.Response.WriteAsync(JsonSerializer.Serialize(new {message}));
+            return context.Response.WriteAsync(JsonSerializer.Serialize(
+                new ErrorResponse {
+                    Status = (int)status,
+                    Errors = new Dictionary<string, string[]>
+                    {
+                        { "error", new string[] { message } }
+                    }
+                }, options: new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower }
+            ));
         }
     }
 }

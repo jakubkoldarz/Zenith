@@ -38,12 +38,14 @@ namespace Zenith.Data
             modelBuilder.Entity<ProjectMembership>()
                 .HasOne(pm => pm.User)
                 .WithMany(u => u.ProjectMemberships)
-                .HasForeignKey(pm => pm.UserId);
+                .HasForeignKey(pm => pm.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<ProjectMembership>()
                 .HasOne(pm => pm.Project)
                 .WithMany(p => p.ProjectMemberships)
-                .HasForeignKey(pm => pm.ProjectId);
+                .HasForeignKey(pm => pm.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<ProjectMembership>()
                 .Property(pm => pm.Role)
