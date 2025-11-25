@@ -28,32 +28,32 @@ namespace Zenith.Controllers
             return StatusCode(StatusCodes.Status201Created, new { project.Id, project.Name, project.Role });
         }
 
-        [HttpPatch("{projectId}")]
-        public async Task<IActionResult> UpdateProject([FromRoute] int projectId, [FromBody] UpdateProjectDto updateProjectDto)
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> UpdateProject([FromRoute(Name = "id")] int projectId, [FromBody] UpdateProjectDto updateProjectDto)
         {
             var userId = User.GetUserId();
             var project = await projectService.UpdateProjectAsync(projectId, userId, updateProjectDto);
             return Ok(new { project.Id, project.Name, project.Role });
         }
 
-        [HttpPut("{projectId}/assign")]
-        public async Task<IActionResult> AssignRoleToProject([FromRoute] int projectId, [FromBody] AssignRoleDto assignRoleDto)
+        [HttpPut("{id}/assign")]
+        public async Task<IActionResult> AssignRoleToProject([FromRoute(Name = "id")] int projectId, [FromBody] AssignRoleDto assignRoleDto)
         {
             var userId = User.GetUserId();
             await projectService.AssignRoleAsync(projectId, userId, assignRoleDto);
             return Ok();
         }
 
-        [HttpPut("{projectId}/revoke")]
-        public async Task<IActionResult> RevokeAccessToProject([FromRoute] int projectId, [FromBody] RevokeAccessDto revokeAccessDto)
+        [HttpPut("{id}/revoke")]
+        public async Task<IActionResult> RevokeAccessToProject([FromRoute(Name = "id")] int projectId, [FromBody] RevokeAccessDto revokeAccessDto)
         {
             var userId = User.GetUserId();
             await projectService.RevokeAccessAsync(projectId, userId, revokeAccessDto);
             return Ok();
         }
 
-        [HttpDelete("{projectId}")]
-        public async Task<IActionResult> DeleteProject([FromRoute] int projectId)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteProject([FromRoute(Name = "id")] int projectId)
         {
             var userId = User.GetUserId();
             await projectService.DeleteProjectAsync(projectId, userId);

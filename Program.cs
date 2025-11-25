@@ -112,6 +112,7 @@ builder.Services.AddSingleton<JwtTokenService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<ProjectService>();
+builder.Services.AddScoped<CategoryService>();
 
 var app = builder.Build();
 app.UseMiddleware<ExceptionMiddleware>();

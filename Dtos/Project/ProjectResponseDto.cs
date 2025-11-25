@@ -2,7 +2,7 @@
 
 namespace Zenith.Dtos.Project
 {
-    public class ProjectDto
+    public class ProjectResponseDto
     {
         public int Id { get; set; }
         public string? Name { get; set; }

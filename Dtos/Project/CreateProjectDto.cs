@@ -7,7 +7,7 @@ namespace Zenith.Dtos.Project
     {
         [DefaultValue("Planned activities")]
         [Required(ErrorMessage = "Project name is required")]
-        [MaxLength(100, ErrorMessage = "Project's name cannot exceed 100 characters")]
+        [MaxLength(100, ErrorMessage = "Project name cannot exceed 100 characters")]
         public string? Name { get; set; }
     }
 }
