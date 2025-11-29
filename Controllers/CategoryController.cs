@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Zenith.Attributes;
 using Zenith.Dtos.Category;
 using Zenith.Extensions;
 using Zenith.Services;
+using Zenith.Models.Enums;
 
 namespace Zenith.Controllers
 {
@@ -12,6 +14,7 @@ namespace Zenith.Controllers
     public class CategoryController(CategoryService categoryService) : ControllerBase
     {
         [HttpGet]
+        [ProjectAuthorize(ProjectRole.Viewer, "projectId")]
         public async Task<IActionResult> Get([FromQuery] int projectId)
         {
             var userId = User.GetUserId();
@@ -24,10 +27,11 @@ namespace Zenith.Controllers
         {
             var userId = User.GetUserId();
             var category = await categoryService.CreateCategoryAsync(userId, createCategoryDto);
-            return Ok(new { category });
+            return Ok(category);
         }
 
         [HttpPatch("{id}")]
+        [CategoryAuthorize(ProjectRole.Editor)]
         public async Task<IActionResult> Update([FromRoute(Name = "id")] int categoryId, [FromBody] UpdateCategoryDto updateCategoryDto)
         {
             var userId = User.GetUserId();
@@ -36,6 +40,7 @@ namespace Zenith.Controllers
         }
 
         [HttpPatch("{id}/reorder")]
+        [CategoryAuthorize(ProjectRole.Editor)]
         public async Task<IActionResult> Reorder([FromRoute(Name = "id")] int categoryId, [FromBody] ReorderCategoryDto reorderCategoryDto)
         {
             var userId = User.GetUserId();
@@ -44,6 +49,7 @@ namespace Zenith.Controllers
         }
 
         [HttpDelete("{id}")]
+        [CategoryAuthorize(ProjectRole.Editor)]
         public async Task<IActionResult> Delete([FromRoute(Name = "id")] int categoryId)
         {
             var userId = User.GetUserId();

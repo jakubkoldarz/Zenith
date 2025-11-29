@@ -113,6 +113,7 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<ProjectService>();
 builder.Services.AddScoped<CategoryService>();
+builder.Services.AddScoped<TaskService>();
 
 var app = builder.Build();
 app.UseMiddleware<ExceptionMiddleware>();

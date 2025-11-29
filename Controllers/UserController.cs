@@ -17,10 +17,8 @@ namespace Zenith.Controllers
         public async Task<IActionResult> GetProfile()
         {
             var userId = User.GetUserId();
-
-            var userDto = await userService.GetSingleUserAsync(userId);
-
-            return Ok(userDto);
+            var user = await userService.GetSingleUserAsync(userId);
+            return Ok(user);
         }
 
         [HttpGet]

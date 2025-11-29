@@ -12,8 +12,6 @@ namespace Zenith.Services
     {
         public async Task<IEnumerable<CategoryResponseDto>> GetCategoriesAsync(int projectId, int userId)
         {
-            await context.ValidateMembershipAsync(projectId, userId);
-
             var categories = await context.Categories
                 .Where(c => c.ProjectId == projectId)
                 .OrderBy(c => c.Order)
@@ -48,10 +46,8 @@ namespace Zenith.Services
 
             if (category == null)
             {
-                throw new NotFoundException("Category not found.");
+                throw new NotFoundException("Category not found");
             }
-
-            await context.ValidateMembershipAsync(category.ProjectId, userId, ProjectRole.Editor);
 
             category.Name = updateCategoryDto.Name;
 
@@ -65,11 +61,9 @@ namespace Zenith.Services
 
             if(category == null)
             {
-                throw new NotFoundException("Category not found.");
+                throw new NotFoundException("Category not found");
             }
             
-            await context.ValidateMembershipAsync(category.ProjectId, userId, ProjectRole.Editor);
-
             using var transaction = await context.Database.BeginTransactionAsync();
             try
             {
@@ -123,10 +117,8 @@ namespace Zenith.Services
 
             if(categoryToDelete == null)
             {
-                throw new NotFoundException("Category not found.");
+                throw new NotFoundException("Category not found");
             }
-
-            await context.ValidateMembershipAsync(categoryToDelete.ProjectId, userId, ProjectRole.Editor);
 
             using var transaction = await context.Database.BeginTransactionAsync();
             try

@@ -46,10 +46,6 @@ namespace Zenith.Data
                 .WithMany(p => p.ProjectMemberships)
                 .HasForeignKey(pm => pm.ProjectId)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<ProjectMembership>()
-                .Property(pm => pm.Role)
-                .HasConversion<string>();
         }
     }
 }

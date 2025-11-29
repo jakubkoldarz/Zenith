@@ -17,14 +17,9 @@ namespace Zenith.Extensions
             var membership = await context.ProjectMemberships
                 .FirstOrDefaultAsync(pm => pm.ProjectId == projectId && pm.UserId == userId);
 
-            if(membership == null)
+            if(membership == null || (requiredRole.HasValue && membership.Role < requiredRole))
             {
-                throw new UnauthorizedException("User is not a member of the specified project.");
-            }
-
-            if(requiredRole.HasValue && membership.Role < requiredRole)
-            {
-                throw new UnauthorizedException("User does not have the required role to manage this project.");
+                throw new ForbiddenException();
             }
 
             return membership;

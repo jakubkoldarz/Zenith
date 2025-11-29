@@ -2,12 +2,13 @@
 using Zenith.Data;
 using Zenith.Dtos.User;
 using Zenith.Exceptions;
+using Zenith.Extensions;
 
 namespace Zenith.Services
 {
     public class UserService(DataContext context)
     {
-        public async Task<UserDto> GetSingleUserAsync(int userId)
+        public async Task<UserResponseDto> GetSingleUserAsync(int userId)
         {
             var user = await context.Users.FindAsync(userId);
 
@@ -16,15 +17,9 @@ namespace Zenith.Services
                 throw new NotFoundException("User not found");
             }
 
-            return new UserDto
-            {
-                Id = user.Id,
-                Firstname = user.Firstname,
-                Lastname = user.Lastname,
-                Email = user.Email
-            };
+            return user.ToDto();
         }
-        public async Task<IEnumerable<UserDto>> GetUsersAsync(string? searchParam = null)
+        public async Task<IEnumerable<UserResponseDto>> GetUsersAsync(string? searchParam = null)
         {
             var query = context.Users.AsNoTracking().AsQueryable();
 
@@ -37,13 +32,7 @@ namespace Zenith.Services
                 ).Take(20);
             }
 
-            var users = await query.Select(u => new UserDto
-            {
-                Id = u.Id,
-                Firstname = u.Firstname,
-                Lastname = u.Lastname,
-                Email = u.Email
-            }).ToListAsync();
+            var users = await query.Select(u => u.ToDto()).ToListAsync();
 
             return users;
         }

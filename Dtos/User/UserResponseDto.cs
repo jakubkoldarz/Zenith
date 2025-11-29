@@ -1,6 +1,6 @@
 ﻿namespace Zenith.Dtos.User
 {
-    public class UserDto
+    public class UserResponseDto
     {
         public int Id { get; set; }
         public string? Firstname { get; set; }

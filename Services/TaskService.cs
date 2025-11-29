@@ -16,10 +16,8 @@ namespace Zenith.Services
 
             if(category == null)
             {
-                throw new NotFoundException("Category not found."); 
+                throw new NotFoundException("Category not found"); 
             }
-
-            await context.ValidateMembershipAsync(category.ProjectId, userId);
 
             var tasks = await context.Tasks
                 .AsNoTracking()
@@ -35,7 +33,7 @@ namespace Zenith.Services
 
             if(category == null)
             {
-                throw new NotFoundException("Category not found.");
+                throw new NotFoundException("Category not found");
             }
 
             await context.ValidateMembershipAsync(category.ProjectId, userId, ProjectRole.Editor);
@@ -66,11 +64,8 @@ namespace Zenith.Services
 
             if (task == null)
             {
-                throw new NotFoundException("Task not found.");
+                throw new NotFoundException("Task not found");
             }
-
-            var projectId = task.Category!.ProjectId;
-            await context.ValidateMembershipAsync(projectId, userId, ProjectRole.Editor);
 
             task.Title = updateTaskDto.Title;
             task.Description = updateTaskDto.Description;
@@ -88,10 +83,8 @@ namespace Zenith.Services
 
             if (task == null)
             {
-                throw new NotFoundException("Task not found.");
+                throw new NotFoundException("Task not found");
             }
-
-            await context.ValidateMembershipAsync(task.Category!.ProjectId, userId, ProjectRole.Editor);
 
             var oldCategoryId = task.CategoryId;
             var targetCategoryId = moveTaskDto.CategoryId ?? task.CategoryId;
@@ -107,7 +100,7 @@ namespace Zenith.Services
 
                 if (targetCategoryExists == false)
                 {
-                    throw new NotFoundException("Target category not found.");
+                    throw new NotFoundException("Target category not found");
                 }
             }
 
@@ -182,10 +175,8 @@ namespace Zenith.Services
             
             if (taskToDelete == null)
             {
-                throw new NotFoundException("Task not found.");
+                throw new NotFoundException("Task not found");
             }
-
-            await context.ValidateMembershipAsync(taskToDelete.Category!.ProjectId, userId, ProjectRole.Editor);
 
             using var transaction = await context.Database.BeginTransactionAsync();
             try

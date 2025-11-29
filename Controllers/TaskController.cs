@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Zenith.Attributes;
 using Zenith.Dtos.Category;
 using Zenith.Dtos.Task;
 using Zenith.Extensions;
 using Zenith.Services;
+using Zenith.Models.Enums;
 
 namespace Zenith.Controllers
 {
@@ -13,6 +15,7 @@ namespace Zenith.Controllers
     public class TaskController(TaskService taskService) : ControllerBase
     {
         [HttpGet]
+        [CategoryAuthorize(ProjectRole.Viewer, "categoryId")]
         public async Task<IActionResult> GetAll([FromQuery] int categoryId)
         {
             var userId = User.GetUserId();
@@ -29,6 +32,7 @@ namespace Zenith.Controllers
         }
 
         [HttpPatch("{id}")]
+        [TaskAuthorize(ProjectRole.Editor)]
         public async Task<IActionResult> Update([FromRoute(Name = "id")] int taskId, [FromBody] UpdateTaskDto updateTaskDto)
         {
             var userId = User.GetUserId();
@@ -37,6 +41,7 @@ namespace Zenith.Controllers
         }
 
         [HttpPatch("{id}/move")]
+        [TaskAuthorize(ProjectRole.Editor)]
         public async Task<IActionResult> Move([FromRoute(Name = "id")] int taskId, [FromBody] MoveTaskDto moveTaskDto)
         {
             var userId = User.GetUserId();
@@ -45,6 +50,7 @@ namespace Zenith.Controllers
         }
 
         [HttpDelete("{id}")]
+        [TaskAuthorize(ProjectRole.Editor)]
         public async Task<IActionResult> Delete([FromRoute(Name = "id")] int taskId)
         {
             var userId = User.GetUserId();

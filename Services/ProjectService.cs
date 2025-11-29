@@ -5,6 +5,7 @@ using Zenith.Exceptions;
 using Zenith.Extensions;
 using Zenith.Models;
 using Zenith.Models.Enums;
+using Zenith.Dtos.Category;
 
 namespace Zenith.Services
 {
@@ -24,6 +25,45 @@ namespace Zenith.Services
                 }).ToListAsync();
 
             return projects; 
+        }
+        public async Task<ProjectDetailsResponseDto> GetProjectDetailsAsync(int userId, int projectId)
+        {
+            var membership = await context.ProjectMemberships
+                .AsNoTracking()
+                .Where(pm => pm.UserId == userId && pm.ProjectId == projectId)
+                .FirstOrDefaultAsync();
+
+            if(membership == null)
+            {
+                throw new ForbiddenException();
+            }
+
+            var project = await context.Projects
+                .AsNoTracking()
+                .Where(p => p.Id == projectId)
+                    .Include(p => p.Categories.OrderBy(p => p.Order))
+                        .ThenInclude(c => c.TaskItems.OrderBy(p => p.Order))
+                .FirstOrDefaultAsync();
+
+            if (project == null)
+            {
+                throw new NotFoundException("Project not found");
+            }
+
+            return new ProjectDetailsResponseDto
+            {
+                Id = project.Id,
+                Name = project.Name,
+                Role = membership.Role,
+
+                Categories = [.. project.Categories.Select(c => new CategoryDetailsResponseDto
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    Order = c.Order,
+                    Tasks = [.. c.TaskItems.Select(t => t.ToDto())]
+                })]
+            };
         }
         public async Task<ProjectResponseDto> CreateProjectAsync(int userId, CreateProjectDto createProjectDto)
         {
@@ -49,55 +89,51 @@ namespace Zenith.Services
                 Role = membership.Role
             };
         }
-        public async Task<ProjectResponseDto> UpdateProjectAsync(int projectId, int userId, UpdateProjectDto updateProjectDto)
+        public async Task<ProjectResponseDto> UpdateProjectAsync(int userId, int projectId, UpdateProjectDto updateProjectDto)
         {
-            var membership = await context.ValidateMembershipAsync(projectId, userId, ProjectRole.Owner);
+            await context.ValidateMembershipAsync(projectId, userId);
 
-            var project = membership.Project;
-            project?.Name = updateProjectDto.Name;
+            var projectMembership = await context.ProjectMemberships
+                .Where(pm => pm.ProjectId == projectId)
+                .Include(pm => pm.Project)
+                .FirstOrDefaultAsync();
+
+            projectMembership.Project.Name = updateProjectDto.Name;
             await context.SaveChangesAsync();
-
-            return new ProjectResponseDto
-            {
-                Id = project!.Id,
-                Name = project.Name,
-                Role = membership.Role
-            };
+            return projectMembership.ToDto();
         }
-        public async Task AssignRoleAsync(int projectId, int ownerUserId, AssignRoleDto assignRoleDto)
+        public async Task AssignRoleAsync(int ownerUserId, int projectId, AssignRoleDto assignRoleDto)
         {
             if (ownerUserId == assignRoleDto.UserId)
             {
-                throw new BadRequestException("Owner cannot change their own role.");
+                throw new BadRequestException("Owner cannot change their own role");
             }
 
-            await context.ValidateMembershipAsync(projectId, ownerUserId, ProjectRole.Owner);
+            //await context.ValidateMembershipAsync(projectId, ownerUserId, ProjectRole.Owner);
 
             var roleName = Enum.Parse<ProjectRole>(assignRoleDto.Role!);
 
             if (roleName == ProjectRole.Owner)
             {
-                throw new BadRequestException("Cannot assign Owner role to another user.");
+                throw new BadRequestException("Cannot assign Owner role to another user");
             }
 
             var targetUserExists = context.Users.Any(u => u.Id == assignRoleDto.UserId);
             if(targetUserExists == false)
             {
-                throw new BadRequestException("Target user does not exist.");
+                throw new BadRequestException("Target user does not exist");
             }
 
             await context.Database.ExecuteSqlRawAsync(
                 @"CALL ""AssignRoleToUser""({0}, {1}, {2});", 
-                projectId, assignRoleDto.UserId, roleName.ToString()
+                projectId, assignRoleDto.UserId, roleName
             );
         }
-        public async Task RevokeAccessAsync(int projectId, int ownerUserId, RevokeAccessDto revokeAccessDto)
+        public async Task RevokeAccessAsync(int ownerUserId, int projectId, RevokeAccessDto revokeAccessDto)
         {
-            await context.ValidateMembershipAsync(projectId, ownerUserId, ProjectRole.Owner);
-
             if (ownerUserId == revokeAccessDto.UserId)
             {
-                throw new BadRequestException("Owner cannot revoke their own access.");
+                throw new BadRequestException("Owner cannot revoke their own access");
             }
 
             await context.Database.ExecuteSqlRawAsync(
@@ -105,10 +141,8 @@ namespace Zenith.Services
                 projectId, revokeAccessDto.UserId
             );
         }
-        public async Task DeleteProjectAsync(int projectId, int userId)
+        public async Task DeleteProjectAsync(int userId, int projectId)
         {
-            await context.ValidateMembershipAsync(projectId, userId, ProjectRole.Owner);
-
             var projectToDelete = new Project { Id = projectId };
             context.Projects.Remove(projectToDelete);
 
