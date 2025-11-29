@@ -8,7 +8,7 @@ using Zenith.Services;
 namespace Zenith.Controllers
 {
     [ApiController]
-    [Route("api/categories")]
+    [Route("api/tasks")]
     [Authorize]
     public class TaskController(TaskService taskService) : ControllerBase
     {
@@ -28,7 +28,7 @@ namespace Zenith.Controllers
             return Ok(task);
         }
 
-        [HttpPatch("/:id")]
+        [HttpPatch("{id}")]
         public async Task<IActionResult> Update([FromRoute(Name = "id")] int taskId, [FromBody] UpdateTaskDto updateTaskDto)
         {
             var userId = User.GetUserId();
@@ -36,12 +36,21 @@ namespace Zenith.Controllers
             return Ok(task);
         }
 
-        [HttpPatch("/:id/move")]
+        [HttpPatch("{id}/move")]
         public async Task<IActionResult> Move([FromRoute(Name = "id")] int taskId, [FromBody] MoveTaskDto moveTaskDto)
         {
             var userId = User.GetUserId();
             await taskService.MoveTaskAsync(userId, taskId, moveTaskDto);
             return NoContent();
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete([FromRoute(Name = "id")] int taskId)
+        {
+            var userId = User.GetUserId();
+            await taskService.DeleteTaskAsync(userId, taskId);
+            return NoContent();
+        }
+
     }
 }

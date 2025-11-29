@@ -57,7 +57,7 @@ namespace Zenith.Controllers
         {
             var userId = User.GetUserId();
             await projectService.DeleteProjectAsync(projectId, userId);
-            return Ok();
+            return NoContent();
         }
     }
 }

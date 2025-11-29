@@ -42,5 +42,13 @@ namespace Zenith.Controllers
             await categoryService.ReorderCategoryAsync(userId, categoryId, reorderCategoryDto);
             return NoContent();
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete([FromRoute(Name = "id")] int categoryId)
+        {
+            var userId = User.GetUserId();
+            await categoryService.DeleteCategoryAsync(userId, categoryId);
+            return NoContent();
+        }
     }
 }

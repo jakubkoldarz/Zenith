@@ -113,6 +113,37 @@ namespace Zenith.Services
             catch
             {
                 await transaction.RollbackAsync();
+                throw;
+            }
+        }
+
+        public async Task DeleteCategoryAsync(int userId, int categoryId)
+        {
+            var categoryToDelete = await context.Categories.FindAsync(categoryId);
+
+            if(categoryToDelete == null)
+            {
+                throw new NotFoundException("Category not found.");
+            }
+
+            await context.ValidateMembershipAsync(categoryToDelete.ProjectId, userId, ProjectRole.Editor);
+
+            using var transaction = await context.Database.BeginTransactionAsync();
+            try
+            {
+                await context.Categories
+                    .Where(c => c.ProjectId == categoryToDelete.ProjectId
+                             && c.Order > categoryToDelete.Order)
+                    .ExecuteUpdateAsync(c => c.SetProperty(cat => cat.Order, cat => cat.Order - 1));
+
+                context.Categories.Remove(categoryToDelete);
+                await context.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
             }
         }
     }
