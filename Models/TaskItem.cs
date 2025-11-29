@@ -15,6 +15,8 @@ namespace Zenith.Models
         public string? Description { get; set; }
 
         public bool IsCompleted { get; set; } = false;
+        [Required]
+        public int Order {  get; set; }
 
         public int CategoryId { get; set; }
         public virtual Category? Category { get; set; }

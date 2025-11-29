@@ -13,7 +13,7 @@ namespace Zenith.Controllers
     public class ProjectController(ProjectService projectService) : ControllerBase
     {
         [HttpGet]
-        public async Task<IActionResult> GetAllProjects()
+        public async Task<IActionResult> GetAll()
         {
             var userId = User.GetUserId();
             var projects = await projectService.GetUserProjectsAsync(userId);
@@ -21,7 +21,7 @@ namespace Zenith.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateProject([FromBody] CreateProjectDto createProjectDto)
+        public async Task<IActionResult> Create([FromBody] CreateProjectDto createProjectDto)
         {
             var userId = User.GetUserId();
             var project = await projectService.CreateProjectAsync(userId, createProjectDto);
@@ -29,7 +29,7 @@ namespace Zenith.Controllers
         }
 
         [HttpPatch("{id}")]
-        public async Task<IActionResult> UpdateProject([FromRoute(Name = "id")] int projectId, [FromBody] UpdateProjectDto updateProjectDto)
+        public async Task<IActionResult> Update([FromRoute(Name = "id")] int projectId, [FromBody] UpdateProjectDto updateProjectDto)
         {
             var userId = User.GetUserId();
             var project = await projectService.UpdateProjectAsync(projectId, userId, updateProjectDto);
@@ -37,7 +37,7 @@ namespace Zenith.Controllers
         }
 
         [HttpPut("{id}/assign")]
-        public async Task<IActionResult> AssignRoleToProject([FromRoute(Name = "id")] int projectId, [FromBody] AssignRoleDto assignRoleDto)
+        public async Task<IActionResult> AssignRole([FromRoute(Name = "id")] int projectId, [FromBody] AssignRoleDto assignRoleDto)
         {
             var userId = User.GetUserId();
             await projectService.AssignRoleAsync(projectId, userId, assignRoleDto);
@@ -45,7 +45,7 @@ namespace Zenith.Controllers
         }
 
         [HttpPut("{id}/revoke")]
-        public async Task<IActionResult> RevokeAccessToProject([FromRoute(Name = "id")] int projectId, [FromBody] RevokeAccessDto revokeAccessDto)
+        public async Task<IActionResult> RevokeAccess([FromRoute(Name = "id")] int projectId, [FromBody] RevokeAccessDto revokeAccessDto)
         {
             var userId = User.GetUserId();
             await projectService.RevokeAccessAsync(projectId, userId, revokeAccessDto);
@@ -53,7 +53,7 @@ namespace Zenith.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProject([FromRoute(Name = "id")] int projectId)
+        public async Task<IActionResult> Delete([FromRoute(Name = "id")] int projectId)
         {
             var userId = User.GetUserId();
             await projectService.DeleteProjectAsync(projectId, userId);

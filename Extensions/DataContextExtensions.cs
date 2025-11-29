@@ -15,7 +15,6 @@ namespace Zenith.Extensions
             ProjectRole? requiredRole = null)
         {
             var membership = await context.ProjectMemberships
-                .Include(pm => pm.Project)
                 .FirstOrDefaultAsync(pm => pm.ProjectId == projectId && pm.UserId == userId);
 
             if(membership == null)

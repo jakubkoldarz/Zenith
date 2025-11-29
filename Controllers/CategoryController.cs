@@ -12,7 +12,7 @@ namespace Zenith.Controllers
     public class CategoryController(CategoryService categoryService) : ControllerBase
     {
         [HttpGet]
-        public async Task<IActionResult> GetCategoriesByProjectId([FromQuery] int projectId)
+        public async Task<IActionResult> Get([FromQuery] int projectId)
         {
             var userId = User.GetUserId();
             var categories = await categoryService.GetCategoriesAsync(projectId, userId);
@@ -20,11 +20,27 @@ namespace Zenith.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryDto createCategoryDto)
+        public async Task<IActionResult> Create([FromBody] CreateCategoryDto createCategoryDto)
         {
             var userId = User.GetUserId();
             var category = await categoryService.CreateCategoryAsync(userId, createCategoryDto);
             return Ok(new { category });
+        }
+
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> Update([FromRoute(Name = "id")] int categoryId, [FromBody] UpdateCategoryDto updateCategoryDto)
+        {
+            var userId = User.GetUserId();
+            var category = await categoryService.UpdateCategoryAsync(userId, categoryId, updateCategoryDto);
+            return Ok(new { category });
+        }
+
+        [HttpPatch("{id}/reorder")]
+        public async Task<IActionResult> Reorder([FromRoute(Name = "id")] int categoryId, [FromBody] ReorderCategoryDto reorderCategoryDto)
+        {
+            var userId = User.GetUserId();
+            await categoryService.ReorderCategoryAsync(userId, categoryId, reorderCategoryDto);
+            return NoContent();
         }
     }
 }

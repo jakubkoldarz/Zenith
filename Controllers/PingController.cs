@@ -3,14 +3,12 @@
 namespace ZenithApi.Controllers
 {
     [ApiController] 
-    [Route("[controller]")] 
+    [Route("api/ping")] 
     public class PingController : ControllerBase
     {
-        // Obsługuje żądanie GET na /api/ping
         [HttpGet]
         public IActionResult GetPing()
         {
-            // Zwraca prosty tekst "Pong" i status 200 OK
             return Ok("Pong");
         }
     }

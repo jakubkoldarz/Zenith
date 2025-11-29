@@ -10,18 +10,15 @@ namespace Zenith.Services
 {
     public class CategoryService(DataContext context)
     {
-        public async Task<List<CategoryResponseDto>> GetCategoriesAsync(int projectId, int userId)
+        public async Task<IEnumerable<CategoryResponseDto>> GetCategoriesAsync(int projectId, int userId)
         {
             await context.ValidateMembershipAsync(projectId, userId);
 
             var categories = await context.Categories
                 .Where(c => c.ProjectId == projectId)
-                .Select(c => new CategoryResponseDto
-                {
-                    Id = c.Id,
-                    Name = c.Name,
-                    ProjectId = c.ProjectId
-                }).ToListAsync();
+                .OrderBy(c => c.Order)
+                .Select(c => c.ToDto())
+                .ToListAsync();
 
             return categories;
         }
@@ -29,21 +26,21 @@ namespace Zenith.Services
         {
             await context.ValidateMembershipAsync(createCategoryDto.ProjectId, userId);
 
+            var categoriesCount = await context.Categories
+                .Where(c => c.ProjectId == createCategoryDto.ProjectId)
+                .CountAsync();
+
             var category = new Category
             {
                 Name = createCategoryDto.Name,
-                ProjectId = createCategoryDto.ProjectId
+                ProjectId = createCategoryDto.ProjectId,
+                Order = categoriesCount
             };
 
             context.Categories.Add(category);
             await context.SaveChangesAsync();
 
-            return new CategoryResponseDto
-            {
-                Id = category.Id,
-                Name = category.Name,
-                ProjectId = category.ProjectId
-            };
+            return category.ToDto();
         }
         public async Task<CategoryResponseDto> UpdateCategoryAsync(int userId, int categoryId, UpdateCategoryDto updateCategoryDto)
         {
@@ -54,18 +51,13 @@ namespace Zenith.Services
                 throw new NotFoundException("Category not found.");
             }
 
-            await context.ValidateMembershipAsync(userId, category.ProjectId, ProjectRole.Editor);
+            await context.ValidateMembershipAsync(category.ProjectId, userId, ProjectRole.Editor);
 
             category.Name = updateCategoryDto.Name;
 
             await context.SaveChangesAsync();
 
-            return new CategoryResponseDto
-            {
-                Id = category.Id,
-                Name = category.Name,
-                ProjectId = category.ProjectId
-            };
+            return category.ToDto();
         }
         public async Task ReorderCategoryAsync(int userId, int categoryId, ReorderCategoryDto reorderCategoryDto)
         {
@@ -76,24 +68,25 @@ namespace Zenith.Services
                 throw new NotFoundException("Category not found.");
             }
             
-            await context.ValidateMembershipAsync(userId, category.ProjectId, ProjectRole.Editor);
-
-            var categoriesCount = await context.Categories
-                .Where(c => c.ProjectId == category.ProjectId)
-                .CountAsync();
-
-            int newOrder = Math.Clamp(reorderCategoryDto.Order, 0, categoriesCount - 1);
-            int oldOrder = category.Order;
-
-            if (newOrder == oldOrder)
-            {
-                return;
-            }
+            await context.ValidateMembershipAsync(category.ProjectId, userId, ProjectRole.Editor);
 
             using var transaction = await context.Database.BeginTransactionAsync();
             try
             {
-                if(newOrder > oldOrder)
+                var categoriesCount = await context.Categories
+                    .Where(c => c.ProjectId == category.ProjectId)
+                    .CountAsync();
+
+                int newOrder = Math.Clamp(reorderCategoryDto.Order, 0, categoriesCount - 1);
+                int oldOrder = category.Order;
+
+                if (newOrder == oldOrder)
+                {
+                    await transaction.RollbackAsync();
+                    return;
+                }
+
+                if (newOrder > oldOrder)
                 {
                     // Przesunięcie w górę
                     await context.Categories
