@@ -59,6 +59,8 @@ services:
     frontend:
         build:
             context: ./frontend
+            args:
+                - REACT_APP_API_URL=http://localhost:8082/api
         container_name: zenith_frontend
         restart: always
         ports:

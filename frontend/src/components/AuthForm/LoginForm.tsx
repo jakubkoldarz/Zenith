@@ -1,4 +1,4 @@
-import { Box, Typography, TextField, useTheme, Button, InputAdornment } from "@mui/material";
+import { Box, Typography, TextField, useTheme, Button, InputAdornment, Alert } from "@mui/material";
 import { Key, Email } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -6,11 +6,15 @@ import { GlassCard } from "../ui/GlassCard";
 import { LoginFormData, loginSchema } from "../../schemas/authSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSnackbar } from "notistack";
-import api from "../../api";
-import { LoginDto } from "../../types/authDto";
+import { AuthResponseDto, LoginDto } from "../../types/authDto";
+import { useApi } from "../../hooks/useApi";
+import useAuth from "../../hooks/useAuth";
 
 export const LoginForm = () => {
     const { enqueueSnackbar } = useSnackbar();
+    const { login } = useAuth();
+    const { loading, error, execute } = useApi<AuthResponseDto, LoginDto>();
+
     const theme = useTheme();
     const iconColor = theme.palette.primary.light;
 
@@ -22,10 +26,14 @@ export const LoginForm = () => {
         resolver: zodResolver(loginSchema),
     });
 
-    const onSubmit = (data: LoginFormData) => {
-        api.post<LoginDto>("/auth/login", { data }).then(() => {});
-        enqueueSnackbar("Login functionality is not implemented yet.", { variant: "info" });
+    const onSubmit = async (data: LoginFormData) => {
+        try {
+            const response = await execute("post", "auth/login", data as LoginDto);
+            login(response.token);
+            enqueueSnackbar("Login successful!", { variant: "success" });
+        } catch (err) {}
     };
+
     return (
         <GlassCard
             sx={{
@@ -91,10 +99,13 @@ export const LoginForm = () => {
                     }}
                 />
 
+                {error && <Alert severity="error">{error.errors.join(", ")}</Alert>}
+
                 <Button
                     variant="contained"
                     type="submit"
                     size="large"
+                    disabled={loading}
                     sx={{ marginTop: "1.5rem", py: 1.5, fontWeight: 600 }}
                 >
                     Login
