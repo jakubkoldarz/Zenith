@@ -1,13 +1,5 @@
-import { Stack } from "@mui/material";
+import AppHeader from "../components/AppHeader";
 
 export default function DashboardPage() {
-    return (
-        <Stack
-            alignItems="center"
-            justifyContent="center"
-            sx={{ minHeight: "100vh", backgroundSize: "cover", backgroundImage: "url('star_banner.png')" }}
-        >
-            DashboardPage
-        </Stack>
-    );
+    return <AppHeader />;
 }

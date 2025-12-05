@@ -103,7 +103,7 @@ export const RegisterForm = () => {
                     fullWidth
                     {...register("lastname")}
                     error={!!errors.lastname}
-                    helperText={errors.lastname ? errors.lastname.message : ""}
+                    helperText={errors.lastname?.message as string}
                     slotProps={{
                         input: {
                             startAdornment: (
