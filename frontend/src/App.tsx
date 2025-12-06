@@ -5,10 +5,13 @@ import LoginPage from "./pages/LoginPage";
 import { theme } from "./theme";
 import { SnackbarProvider } from "notistack";
 import RegisterPage from "./pages/RegisterPage";
-import DashboardPage from "./pages/DashboardPage";
 import PublicRoute from "./components/auth/PublicRoute";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import useAuth from "./hooks/useAuth";
+import MainLayout from "./components/layouts/MainLayout";
+import ProjectList from "./components/ProjectList";
+import UserProfile from "./components/UserProfile";
+import ProjectDetails from "./components/ProjectDetails";
 
 function App() {
     const { isAuthenticated } = useAuth();
@@ -30,10 +33,14 @@ function App() {
                             </Route>
 
                             <Route element={<ProtectedRoute />}>
-                                <Route path="/" element={<DashboardPage />} />
+                                <Route element={<MainLayout />}>
+                                    <Route path="/profile" element={<UserProfile />} />
+                                    <Route path="/projects" element={<ProjectList />} />
+                                    <Route path="projects/:id" element={<ProjectDetails />} />
+                                </Route>
                             </Route>
 
-                            <Route path="*" element={<Navigate to="/" replace />} />
+                            <Route path="*" element={<Navigate to="/projects" replace />} />
                         </Routes>
                     </BrowserRouter>
                 </SnackbarProvider>

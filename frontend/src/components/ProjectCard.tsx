@@ -1,10 +1,6 @@
-// components/ProjectCard.tsx
-import { Card, CardActionArea, CardContent, Typography, Box, useTheme } from "@mui/material";
+import { Card, CardActionArea, CardContent, Typography, Box } from "@mui/material";
 import { ProjectDto } from "../types/projectDto";
-import { RoleChip } from "./RoleChip";
 import { useNavigate } from "react-router-dom";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import { ProjectRole } from "../types/projectRoles";
 import { useRoleColor } from "../hooks/useRoleColor";
 
 export function ProjectCard({ project }: { project: ProjectDto }) {
@@ -15,7 +11,7 @@ export function ProjectCard({ project }: { project: ProjectDto }) {
         <Card sx={{ maxWidth: 345, margin: 2 }}>
             <CardActionArea onClick={() => navigate(`/projects/${project.id}`)}>
                 <CardContent>
-                    <Typography gutterBottom variant="h5" component="div">
+                    <Typography gutterBottom variant="h6" component="div">
                         {project.name}
                     </Typography>
                     <Box

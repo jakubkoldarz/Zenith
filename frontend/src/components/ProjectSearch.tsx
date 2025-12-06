@@ -79,7 +79,14 @@ export default function ProjectSearch() {
             renderOption={(props, option) => {
                 return (
                     <li {...props} key={option.id} onClick={() => navigate(`/projects/${option.id}`)}>
-                        <Stack direction="row" alignItems="center" spacing={1} width="100%">
+                        <Stack
+                            direction="row"
+                            alignItems="center"
+                            justifyContent="space-between"
+                            py="0.5rem"
+                            spacing={1}
+                            width="100%"
+                        >
                             <Typography variant="body1">{option.name}</Typography>
                             <RoleChip role={option.role} />
                         </Stack>

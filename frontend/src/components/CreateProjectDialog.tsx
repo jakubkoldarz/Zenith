@@ -31,11 +31,13 @@ export function CreateProjectDialog({ open, onClose, onProjectCreated }: CreateP
         register,
         handleSubmit,
         formState: { errors },
+        reset,
     } = useForm<CreateProjectFormData>({
         resolver: zodResolver(createProjectSchema),
     });
 
     const handleClose = () => {
+        reset();
         onClose();
     };
 

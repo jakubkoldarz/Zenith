@@ -1,13 +1,13 @@
+import { Outlet } from "react-router-dom";
+import AppHeader from "../AppHeader";
+import { Grid } from "@mui/material";
+import SideMenu from "../SideMenu";
+import { CreateProjectDialog } from "../CreateProjectDialog";
 import { useEffect, useState } from "react";
-import AppHeader from "../components/AppHeader";
-import { ProjectDto } from "../types/projectDto";
-import { ProjectCard } from "../components/ProjectCard";
-import api from "../api";
-import { Stack } from "@mui/material";
-import { CreateProjectDialog } from "../components/CreateProjectDialog";
-import { useApi } from "../hooks/useApi";
+import { useApi } from "../../hooks/useApi";
+import { ProjectDto } from "../../types/projectDto";
 
-export default function DashboardPage() {
+export default function MainLayout() {
     const [projects, setProjects] = useState<ProjectDto[]>([]);
     const [openCreateDialog, setOpenCreateDialog] = useState<boolean>(false);
     const { data, error, loading, execute } = useApi<ProjectDto[]>();
@@ -28,14 +28,14 @@ export default function DashboardPage() {
     return (
         <>
             <AppHeader onOpenCreateDialog={() => setOpenCreateDialog(true)} />
-            <Stack direction="row" spacing={2} margin={2}>
-                <h1>Dashboard</h1>
-            </Stack>
-            <Stack direction="row" spacing={2} margin={2} flexWrap="wrap">
-                {projects.map((project) => {
-                    return <ProjectCard key={project.id} project={project} />;
-                })}
-            </Stack>
+            <Grid container spacing={2} margin={2}>
+                <Grid size={2} display="flex" justifyContent="center">
+                    <SideMenu />
+                </Grid>
+                <Grid size={10}>
+                    <Outlet />
+                </Grid>
+            </Grid>
             <CreateProjectDialog
                 open={openCreateDialog}
                 onClose={() => setOpenCreateDialog(false)}
