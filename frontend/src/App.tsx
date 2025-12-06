@@ -9,9 +9,9 @@ import PublicRoute from "./components/auth/PublicRoute";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import useAuth from "./hooks/useAuth";
 import MainLayout from "./components/layouts/MainLayout";
-import ProjectList from "./components/ProjectList";
 import UserProfile from "./components/UserProfile";
 import ProjectDetails from "./components/ProjectDetails";
+import ProjectsPanel from "./components/ProjectsPanel";
 
 function App() {
     const { isAuthenticated } = useAuth();
@@ -35,7 +35,7 @@ function App() {
                             <Route element={<ProtectedRoute />}>
                                 <Route element={<MainLayout />}>
                                     <Route path="/profile" element={<UserProfile />} />
-                                    <Route path="/projects" element={<ProjectList />} />
+                                    <Route path="/projects" element={<ProjectsPanel />} />
                                     <Route path="projects/:id" element={<ProjectDetails />} />
                                 </Route>
                             </Route>
