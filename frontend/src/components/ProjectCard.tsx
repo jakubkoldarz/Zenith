@@ -9,10 +9,20 @@ export function ProjectCard({ project }: { project: ProjectDto }) {
 
     return (
         <Grid key={project.id} size={{ xs: 12, sm: 6, md: 4 }}>
-            <Card>
+            <Card sx={{ borderRadius: 2 }}>
                 <CardActionArea onClick={() => navigate(`/projects/${project.id}`)}>
                     <CardContent>
-                        <Typography gutterBottom variant="h6" fontWeight="normal">
+                        <Typography
+                            sx={{
+                                WebkitLineClamp: 1,
+                                display: "-webkit-box",
+                                WebkitBoxOrient: "vertical",
+                                overflow: "hidden",
+                            }}
+                            gutterBottom
+                            variant="h6"
+                            fontWeight="normal"
+                        >
                             {project.name}
                         </Typography>
                         <Box

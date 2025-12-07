@@ -21,11 +21,13 @@ export default function SideMenu(): ReactElement {
     const routesElements = routes.map((route) => {
         return (
             <ListItemButton
+                key={route.link}
                 selected={location.pathname.startsWith(route.link)}
                 onClick={() => navigate(route.link)}
                 sx={{
                     px: 4,
                     width: "100%",
+                    borderRadius: 2,
                     "&.Mui-selected": {
                         color: "primary.main",
                         "& .MuiSvgIcon-root": {
@@ -46,7 +48,14 @@ export default function SideMenu(): ReactElement {
     });
 
     return (
-        <Stack spacing={1} height="fit-content" direction="column" alignItems="flex-start" justifyContent="flex-start">
+        <Stack
+            sx={{ width: "100%" }}
+            spacing={1}
+            height="fit-content"
+            direction="column"
+            alignItems="flex-start"
+            justifyContent="flex-start"
+        >
             {routesElements}
         </Stack>
     );

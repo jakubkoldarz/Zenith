@@ -12,8 +12,8 @@ export const theme = createTheme({
         },
 
         secondary: {
-            main: "#22d3ee",
-            contrastText: "#0f172a",
+            main: "#1565C0",
+            contrastText: "#ffffff",
         },
 
         background: {
@@ -34,9 +34,9 @@ export const theme = createTheme({
         },
 
         roles: {
-            owner: "#7646efff",
-            editor: "#0e66e9ff",
-            viewer: "#089c6bff",
+            owner: "#6200EA",
+            editor: "#2962FF",
+            viewer: "#00695C",
         },
     },
 

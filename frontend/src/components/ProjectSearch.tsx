@@ -3,12 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { ProjectDto } from "../types/projectDto";
 import api from "../api";
 import SearchIcon from "@mui/icons-material/Search";
-import { Autocomplete, Badge, Chip, InputAdornment, Stack, TextField, Typography, useTheme } from "@mui/material";
+import { Autocomplete, InputAdornment, Stack, TextField, Typography } from "@mui/material";
 import { RoleChip } from "./RoleChip";
 
 export default function ProjectSearch() {
     const navigate = useNavigate();
-    const theme = useTheme();
 
     const [projects, setProjects] = useState<ProjectDto[]>([]);
     const [loading, setLoading] = useState(false);
@@ -78,7 +77,14 @@ export default function ProjectSearch() {
             }}
             renderOption={(props, option) => {
                 return (
-                    <li {...props} key={option.id} onClick={() => navigate(`/projects/${option.id}`)}>
+                    <li
+                        {...props}
+                        key={option.id}
+                        onClick={() => {
+                            setOpen(false);
+                            navigate(`/projects/${option.id}`);
+                        }}
+                    >
                         <Stack
                             direction="row"
                             alignItems="center"

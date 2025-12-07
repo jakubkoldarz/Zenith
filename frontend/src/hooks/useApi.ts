@@ -2,11 +2,11 @@ import { useState } from "react";
 import api from "../api";
 import { AxiosError } from "axios";
 import { ErrorResponseDto } from "../types/errorResponseDto";
-import { string } from "zod";
 
 export const useApi = <TResponse, TPayload = void>() => {
     const [data, setData] = useState<TResponse | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
+    // Inicjalizujemy jako null
     const [error, setError] = useState<ErrorResponseDto | null>(null);
 
     const execute = async (
@@ -23,14 +23,22 @@ export const useApi = <TResponse, TPayload = void>() => {
             setData(response.data);
             return response.data;
         } catch (err: any) {
-            let errorMessage: ErrorResponseDto = { status: -1, errors: ["An unexpected error occurred"] };
+            let errorDto: ErrorResponseDto = {
+                status: 500,
+                errors: ["An unexpected error occurred"],
+            };
 
-            if (err instanceof AxiosError) {
-                errorMessage = err.response?.data as ErrorResponseDto;
-                errorMessage.errors ??= [err.message];
+            if (err instanceof AxiosError && err.response) {
+                errorDto.status = err.response.status;
+
+                if (err.response.data && (err.response.data as any).errors) {
+                    errorDto.errors = [...(err.response.data as any).errors];
+                }
+            } else if (err instanceof Error) {
+                errorDto.errors = [err.message];
             }
 
-            setError(errorMessage);
+            setError(errorDto);
             throw err;
         } finally {
             setLoading(false);
