@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 import AppHeader from "../AppHeader";
-import { Grid } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 import SideMenu from "../SideMenu";
 import { CreateProjectDialog } from "../../features/projects/components/CreateProjectDialog";
 import { ProjectDto, UpdateProjectDto } from "../../features/projects/types/projectSchemas";
@@ -17,17 +17,22 @@ export default function MainLayout() {
     const [openCreateDialog, setOpenCreateDialog] = useState<boolean>(false);
 
     return (
-        <>
+        <Box sx={{ display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden" }}>
             <AppHeader onOpenCreateDialog={() => setOpenCreateDialog(true)} />
-            <Grid container spacing={2} margin={2}>
-                <Grid size={{ xs: 12, md: 3, lg: 2 }} display="flex" justifyContent="center">
+            <Grid container spacing={2} sx={{ flexGrow: 1, p: 2, overflow: "hidden" }}>
+                <Grid
+                    size={{ xs: 12, md: 3, lg: 2 }}
+                    display="flex"
+                    justifyContent="center"
+                    sx={{ height: "100%", overflowY: "auto" }}
+                >
                     <SideMenu />
                 </Grid>
-                <Grid size={{ xs: 12, md: 9, lg: 10 }} px={2}>
+                <Grid size={{ xs: 12, md: 9, lg: 10 }} sx={{ height: "100%", overflow: "hidden" }}>
                     <Outlet />
                 </Grid>
             </Grid>
             <CreateProjectDialog open={openCreateDialog} onClose={() => setOpenCreateDialog(false)} />
-        </>
+        </Box>
     );
 }

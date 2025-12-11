@@ -16,6 +16,7 @@ import { useProjectDetails } from "../hooks/useProjectDetails";
 import { useUpdateProject } from "../hooks/useUpdateProject";
 import EditBox from "../../../components/EditBox";
 import CategoriesView from "../../categories/components/CategoriesView";
+import { getScrollbarStyles } from "../../../components/ui/Scrollbar";
 
 interface ProjectDetailsParams extends Record<string, string | undefined> {
     id: string;
@@ -91,6 +92,8 @@ export default function ProjectDetails() {
                 overflow="hidden"
                 sx={{
                     background: `linear-gradient(135deg, ${theme.palette.primary.dark}, ${theme.palette.secondary.main})`,
+                    height: "100%",
+                    ...getScrollbarStyles(theme),
                 }}
             >
                 <AppBar position="static" sx={{ backgroundColor: "rgba(0,0,0,0.6)" }}>
@@ -103,7 +106,12 @@ export default function ProjectDetails() {
                         </Button>
                     </Toolbar>
                 </AppBar>
-                <Box padding={4}>
+                <Box
+                    padding={4}
+                    paddingBottom={6}
+                    paddingRight={0}
+                    sx={{ flexGrow: 1, overflowX: "auto", overflowY: "hidden" }}
+                >
                     <CategoriesView projectId={project?.id!} />
                 </Box>
             </Stack>

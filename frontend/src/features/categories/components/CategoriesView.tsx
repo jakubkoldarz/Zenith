@@ -31,14 +31,23 @@ export default function CategoriesView({ projectId }: { projectId: string }) {
 
     return (
         <>
-            <Stack direction="row" sx={{ minHeight: "60vh", overflowX: "auto", gap: 2 }}>
+            <Stack
+                direction="row"
+                sx={{
+                    height: "100%",
+                    gap: 2,
+                    alignItems: "flex-start",
+                    paddingRight: 6,
+                    width: "fit-content",
+                }}
+            >
                 {categories.map((category) => {
                     return <CategoryView key={category.id} category={category} />;
                 })}
                 <GlassButton
                     onClick={handleCreateCategory}
                     variant="contained"
-                    sx={{ height: "fit-content", minWidth: "270px", justifyContent: "left", flexShrink: 0 }}
+                    sx={{ height: "fit-content", minWidth: "250px", justifyContent: "left", flexShrink: 0 }}
                     color="primary"
                     startIcon={<Add />}
                 >
