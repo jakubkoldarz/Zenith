@@ -17,7 +17,8 @@ const createTask = async (data: CreateTaskDto): Promise<TaskDto> => {
 };
 
 const updateTask = async (taskId: string, data: UpdateTaskDto): Promise<TaskDto> => {
-    const response = await api.put<TaskDto>(`/tasks/${taskId}`, data);
+    console.log("Updating task:", taskId, data);
+    const response = await api.patch<TaskDto>(`/tasks/${taskId}`, data);
     return response.data;
 };
 

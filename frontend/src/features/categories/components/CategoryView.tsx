@@ -8,9 +8,13 @@ import { Add } from "@mui/icons-material";
 import useCategoryTasks from "../../tasks/hooks/useCategoryTasks";
 import { CreateTaskDialog } from "../../tasks/components/CreateTaskDialog";
 import { useState } from "react";
+import { UpdateTaskDialog } from "../../tasks/components/UpdateTaskDialog";
+import { TaskDto } from "../../tasks/types/tasksSchemas";
 
 export default function CategoryView({ category }: { category: CategoryDto }) {
-    const [isOpenDialog, setIsOpenDialog] = useState(false);
+    const [openUpdate, setOpenUpdate] = useState<boolean>(false);
+    const [openCreate, setOpenCreate] = useState<boolean>(false);
+    const [selectedTask, setSelectedTask] = useState<TaskDto | null>(null);
     const theme = useTheme();
     const { updateCategory } = useUpdateCategory();
     const { tasks } = useCategoryTasks(category.projectId, category.id);
@@ -21,6 +25,13 @@ export default function CategoryView({ category }: { category: CategoryDto }) {
             projectId: category.projectId!,
             data: { name: newName },
         });
+    };
+
+    const handleSelectTask = (task: TaskDto) => {
+        setSelectedTask(task);
+        if (task) {
+            setOpenUpdate(true);
+        }
     };
 
     return (
@@ -47,19 +58,29 @@ export default function CategoryView({ category }: { category: CategoryDto }) {
 
                 {tasks.length > 0 && (
                     <Stack direction="column" sx={{ overflowY: "auto", minHeight: 0 }}>
-                        <TasksView category={category} />
+                        <TasksView onSelect={handleSelectTask} category={category} />
                     </Stack>
                 )}
                 {tasks.length > 0 && <Divider />}
-                <GlassButton onClick={() => setIsOpenDialog(true)} color="inherit" size="small" startIcon={<Add />}>
+                <GlassButton onClick={() => setOpenCreate(true)} color="inherit" size="small" startIcon={<Add />}>
                     Add Task
                 </GlassButton>
             </Stack>
             <CreateTaskDialog
                 categoryId={category.id}
                 projectId={category.projectId}
-                open={isOpenDialog}
-                onClose={() => setIsOpenDialog(false)}
+                open={openCreate}
+                onClose={() => setOpenCreate(false)}
+            />
+            <UpdateTaskDialog
+                key={selectedTask?.id || "new"}
+                open={openUpdate}
+                onClose={() => {
+                    setOpenUpdate(false);
+                    setSelectedTask(null);
+                }}
+                task={selectedTask}
+                projectId={category.projectId}
             />
         </>
     );
