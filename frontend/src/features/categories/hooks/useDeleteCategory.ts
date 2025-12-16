@@ -23,12 +23,11 @@ export default function useDeleteCategory(projectId: string) {
             return { previousCategories };
         },
 
-        onError: (error, _categoryId, context) => {
+        onError: (_error, _categoryId, context) => {
             if (context?.previousCategories) {
                 queryClient.setQueryData(projectKeys.categories(projectId), context.previousCategories);
             }
             enqueueSnackbar("Failed to delete category", { variant: "error" });
-            console.error("Error deleting category:", error);
         },
 
         onSuccess: () => {

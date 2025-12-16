@@ -12,9 +12,6 @@ export default function useCreateTask(projectId: string, categoryId: string) {
             queryClient.invalidateQueries({ queryKey: projectKeys.tasks(projectId, categoryId) });
             queryClient.invalidateQueries({ queryKey: projectKeys.category(projectId, categoryId) });
         },
-        onError: (error) => {
-            console.error("Error creating task.", error.errors?.[0]);
-        },
     });
 
     return {
