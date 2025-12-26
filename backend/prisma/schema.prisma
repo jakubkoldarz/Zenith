@@ -1,0 +1,66 @@
+// schema.prisma
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id          String   @id @default(uuid()) @db.Uuid
+  email       String   @unique
+  firstname   String
+  lastname    String?
+  password    String
+  
+  memberships ProjectMembership[]
+}
+
+model Project {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String
+  
+  memberships ProjectMembership[]
+  categories  Category[]
+}
+
+model ProjectMembership {
+  projectId String  @db.Uuid
+  userId    String  @db.Uuid
+  role      Role 
+
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, userId]) 
+}
+
+enum Role {
+  OWNER
+  EDITOR
+  VIEWER
+}
+
+model Category {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  projectId String   @db.Uuid
+  order     Int
+
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tasks     Task[]   
+}
+
+model Task {
+  id          String   @id @default(uuid()) @db.Uuid
+  title       String
+  description String?
+  categoryId  String   @db.Uuid
+  order       Int
+  isCompleted Boolean  @default(false)
+
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+}
